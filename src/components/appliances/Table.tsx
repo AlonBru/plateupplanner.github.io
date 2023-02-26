@@ -5,16 +5,13 @@ import { useLayoutStore } from '../../store/layoutStore';
 import { Rotation, SquareType } from '../../utils/helpers';
 
 type ChairPositions = {
-  [key in keyof typeof Rotation]: {
-    translate: [number, number];
-    rotate: number;
-  };
+  [key in keyof typeof Rotation]: number;
 };
 const CHAIR_POSITIONS: ChairPositions = {
-  Up: { translate: [0, -100], rotate: 0 },
-  Right: { translate: [100, 0], rotate: 90 },
-  Down: { translate: [0, 100], rotate: 180 },
-  Left: { translate: [-100, 0], rotate: 270 },
+  Up: 0,
+  Right: 90,
+  Down: 180,
+  Left: 270,
 };
 const TableBase = styled.div`
   position: relative;
@@ -26,11 +23,8 @@ const Chair = styled.img<{ direction: keyof ChairPositions }>`
   top: 0;
   left: 0;
   ${({ direction }) => {
-    const {
-      translate: [x, y],
-      rotate,
-    } = CHAIR_POSITIONS[direction];
-    return `transform: translateX(${x}%) translateY(${y}%) rotate(${rotate}deg) ;`;
+    const rotate = CHAIR_POSITIONS[direction];
+    return `transform: rotate(${rotate}deg) translateY(-100%) ;`;
   }}/* pointer-events: none; */
 `;
 type TableIdType = 'lq' | 'tV' | 'cJ' | 'T2' | 'GM';
