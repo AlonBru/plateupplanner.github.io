@@ -24,8 +24,8 @@ const Chair = styled.img<{ direction: keyof ChairPositions }>`
   left: 0;
   ${({ direction }) => {
     const rotate = CHAIR_POSITIONS[direction];
-    return `transform: rotate(${rotate}deg) translateY(-100%) ;`;
-  }}/* pointer-events: none; */
+    return `transform: rotate(${rotate}deg) translateY(calc( -100% - 5px )) ;`;
+  }}
 `;
 type TableIdType = 'lq' | 'tV' | 'cJ' | 'T2' | 'GM';
 
