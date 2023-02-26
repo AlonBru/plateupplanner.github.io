@@ -14,6 +14,7 @@ import { useLayoutStore } from '../../store/layoutStore';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { isSquareState, isTouchDevice, SquareType } from '../../utils/helpers';
 import * as styled from './styled';
+import { Table } from '../appliances/Table';
 
 const CursorState = () => {
   const [
@@ -218,48 +219,7 @@ const PlanGridSquare = (props: { cell: Cell }) => {
     shallow,
   );
 
-  let image = null;
-  if (squareType !== SquareType.Empty) {
-    image = (
-      <img
-        className='grid-image'
-        draggable={false}
-        src={squareType?.getImageDisplayPath()}
-        alt={squareType?.getImageAlt()}
-        onError={(event: SyntheticEvent) => {
-          const target = event.currentTarget as HTMLImageElement;
-          target.onerror = null; // prevents looping
-          target.src = '/images/display/404.png';
-        }}
-        style={{
-          opacity: opacity,
-          transform: 'scale(1.1)' + squareType?.getTransform(),
-          cursor: 'grab',
-        }}
-        onMouseDown={(e) => handleMouseDown([i, j], e)}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
-        onTouchMove={handleTouchMove}
-        onContextMenu={(e) => e.preventDefault()}
-      />
-    );
-  } else {
-    // touch events fire on the original target
-    // must prevent element from being deleted
-    // using transparent 1px
-    // alternatively, use div for both?
-    image = (
-      <img
-        className='grid-image empty'
-        src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
-        alt=''
-        onTouchStart={() => null}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      />
-    );
-  }
+  const image = getImage();
 
   return (
     <div
@@ -285,6 +245,64 @@ const PlanGridSquare = (props: { cell: Cell }) => {
       {image}
     </div>
   );
+
+  function getImage(): JSX.Element {
+    if (squareType !== SquareType.Empty) {
+      if (squareType.id === 'lq') {
+        return (
+          <Table
+            onMouseDown={(e) => handleMouseDown([i, j], e)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
+            onTouchMove={handleTouchMove}
+            type='lq'
+            opacity={opacity}
+            squareType={squareType}
+          />
+        );
+      }
+      return (
+        <img
+          className='grid-image'
+          draggable={false}
+          src={squareType?.getImageDisplayPath()}
+          alt={squareType?.getImageAlt()}
+          onError={(event: SyntheticEvent) => {
+            const target = event.currentTarget as HTMLImageElement;
+            target.onerror = null; // prevents looping
+            target.src = '/images/display/404.png';
+          }}
+          style={{
+            opacity: opacity,
+            transform: 'scale(1.1)' + squareType?.getTransform(),
+            cursor: 'grab',
+          }}
+          onMouseDown={(e) => handleMouseDown([i, j], e)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          onTouchMove={handleTouchMove}
+          onContextMenu={(e) => e.preventDefault()}
+        />
+      );
+    } else {
+      // touch events fire on the original target
+      // must prevent element from being deleted
+      // using transparent 1px
+      // alternatively, use div for both?
+      return (
+        <img
+          className='grid-image empty'
+          src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII='
+          alt=''
+          onTouchStart={() => null}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        />
+      );
+    }
+  }
 };
 
 const PlanGridWall = (props: { cell: Cell }) => {
