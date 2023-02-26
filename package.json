@@ -7,7 +7,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "react-scripts test",
+    "test": "jest --watch",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "format": "prettier --write src/**/*.ts{,x}",
