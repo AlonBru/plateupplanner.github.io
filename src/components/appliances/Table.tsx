@@ -1,8 +1,9 @@
-import { transform } from 'html2canvas/dist/types/css/property-descriptors/transform';
-import { ComponentPropsWithoutRef, SyntheticEvent } from 'react';
+import { ComponentPropsWithoutRef, SyntheticEvent, useCallback } from 'react';
 import styled from 'styled-components';
+import shallow from 'zustand/shallow';
 import { useLayoutStore } from '../../store/layoutStore';
-import { Rotation, SquareType } from '../../utils/helpers';
+import { Cell, WallState } from '../../types/project';
+import { Rotation, SquareType, WallType } from '../../utils/helpers';
 
 type ChairPositions = {
   [key in keyof typeof Rotation]: number;
@@ -33,10 +34,12 @@ interface Props extends ComponentPropsWithoutRef<'div'> {
   type: TableIdType;
   squareType: SquareType;
   opacity: number;
+  cell: Cell;
 }
 
 export function Table({
   type,
+  cell: [i, j],
   squareType,
   opacity,
   onTouchStart,
@@ -46,7 +49,28 @@ export function Table({
 }: Props) {
   const chair = new SquareType('qB', 'chair.png', 'chair');
   const image = chair.getImageDisplayPath();
-
+  const wallState = useLayoutStore(
+    useCallback(
+      (state) => {
+        if (
+          state.displayStates === undefined ||
+          state.displayStates[i] === undefined ||
+          state.displayStates[i][j] === undefined
+        ) {
+          return;
+        }
+        return {
+          Up: (state.displayStates[i - 1][j] as WallState).wallType,
+          Down: (state.displayStates[i + 1][j] as WallState).wallType,
+          Left: (state.displayStates[i][j - 1] as WallState).wallType,
+          Right: (state.displayStates[i][j + 1] as WallState).wallType,
+        };
+      },
+      [i, j],
+    ),
+    shallow,
+  );
+  console.log(wallState);
   return (
     <TableBase>
       <img
@@ -71,13 +95,16 @@ export function Table({
         onTouchMove={onTouchMove}
         onContextMenu={(e) => e.preventDefault()}
       />
-      {Object.keys(CHAIR_POSITIONS).map((direction) => (
-        <Chair
-          key={direction}
-          src={image}
-          direction={direction as keyof ChairPositions}
-        />
-      ))}
+      {Object.keys(CHAIR_POSITIONS).map((direction) =>
+        (wallState?.[direction as keyof typeof wallState] as WallType)?.id ===
+        '0' ? (
+          <Chair
+            key={direction}
+            src={image}
+            direction={direction as keyof ChairPositions}
+          />
+        ) : null,
+      )}
     </TableBase>
   );
 }

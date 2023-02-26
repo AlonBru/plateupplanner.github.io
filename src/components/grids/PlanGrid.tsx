@@ -259,6 +259,7 @@ const PlanGridSquare = (props: { cell: Cell }) => {
             type='lq'
             opacity={opacity}
             squareType={squareType}
+            cell={props.cell}
           />
         );
       }
