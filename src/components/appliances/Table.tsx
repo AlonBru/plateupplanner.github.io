@@ -60,10 +60,10 @@ export function Table({
           return;
         }
         return {
-          Up: (state.displayStates[i - 1][j] as WallState).wallType,
-          Down: (state.displayStates[i + 1][j] as WallState).wallType,
-          Left: (state.displayStates[i][j - 1] as WallState).wallType,
-          Right: (state.displayStates[i][j + 1] as WallState).wallType,
+          Up: (state.displayStates[i - 1]?.[j] as WallState)?.wallType,
+          Down: (state.displayStates[i + 1]?.[j] as WallState)?.wallType,
+          Left: (state.displayStates[i]?.[j - 1] as WallState)?.wallType,
+          Right: (state.displayStates[i]?.[j + 1] as WallState)?.wallType,
         };
       },
       [i, j],
@@ -96,8 +96,11 @@ export function Table({
         onContextMenu={(e) => e.preventDefault()}
       />
       {Object.keys(CHAIR_POSITIONS).map((direction) =>
-        (wallState?.[direction as keyof typeof wallState] as WallType)?.id ===
-        '0' ? (
+        (
+          wallState?.[direction as keyof typeof wallState] as
+            | WallType
+            | undefined
+        )?.id === '0' ? (
           <Chair
             key={direction}
             src={image}
